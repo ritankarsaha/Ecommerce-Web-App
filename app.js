@@ -16,4 +16,8 @@ app.use(express.urlencoded({extended: true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+
+import cartRouter from "./routes/cart.routes.js"
+app.use("/api/carts", cartRouter)
+
 export { app }
