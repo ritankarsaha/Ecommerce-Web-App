@@ -5,22 +5,20 @@ import { User } from "../models/user.model.js";
 
 
 // generating access and refresh tokens
-const generateAccessAndRefereshTokens = async(userId) =>{
+const generateAccessAndRefereshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        const user = await User.findById(userId);
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
 
-        return {accessToken, refreshToken}
-
-
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+        throw new ApiError(500, "Something went wrong while generating refresh and access token");
     }
-}
+};
 
 
 
@@ -76,11 +74,10 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Username is required for proper logging in!");
     }
 
-
     const user = await User.findOne({ username });
 
-    if (!user ) {
-        throw new ApiError(404, "Wrong username or Password!! ");
+    if (!user) {
+        throw new ApiError(404, "Wrong username or Password!!");
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);
@@ -89,15 +86,7 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Wrong Password");
     }
 
-    if(!user && !isPasswordValid){
-        throw new ApiError(401, "Wrong Credentials");
-    }
-
-    // const accessToken = user.generateAccessToken(); 
-    // const refreshToken = user.generateRefreshToken(); 
-
-    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
-
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id);
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
     const options = {
@@ -113,13 +102,14 @@ const loginUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 {
-                    user: loggedInUser, accessToken, refreshToken
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken,
                 },
                 "User logged In Successfully"
             )
         );
 });
-
 
 
 
